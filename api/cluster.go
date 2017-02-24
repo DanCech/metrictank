@@ -47,7 +47,7 @@ func (s *Server) appStatus(ctx *middleware.Context) {
 func (s *Server) getClusterStatus(ctx *middleware.Context) {
 	status := models.ClusterStatus{
 		ClusterName: cluster.ClusterName,
-		NodeName:    cluster.Manager.ThisNode().Name,
+		NodeName:    cluster.Manager.ThisNode().GetName(),
 		Members:     cluster.Manager.MemberList(),
 	}
 	response.Write(ctx, response.NewJson(200, status, ""))
@@ -58,7 +58,7 @@ func (s *Server) postClusterMembers(ctx *middleware.Context, req models.ClusterM
 	var toJoin []string
 
 	for _, memberNode := range cluster.Manager.MemberList() {
-		memberNames[memberNode.Name] = struct{}{}
+		memberNames[memberNode.GetName()] = struct{}{}
 	}
 
 	for _, peerName := range req.Members {
@@ -179,7 +179,7 @@ func (s *Server) indexDelete(ctx *middleware.Context, req models.IndexDelete) {
 }
 
 type PeerResponse struct {
-	peer cluster.Node
+	peer cluster.NodeIf
 	buf  []byte
 }
 
@@ -211,13 +211,13 @@ func (s *Server) peerQuery(ctx context.Context, data cluster.Traceable, name, pa
 			continue
 		}
 		wg.Add(1)
-		go func(peer cluster.Node) {
+		go func(peer cluster.NodeIf) {
 			defer wg.Done()
-			log.Debug("HTTP Render querying %s%s", peer.Name, path)
+			log.Debug("HTTP Render querying %s%s", peer.GetName(), path)
 			buf, err := peer.Post(reqCtx, name, path, data)
 			if err != nil {
 				cancel()
-				log.Error(4, "HTTP Render error querying %s%s: %q", peer.Name, path, err)
+				log.Error(4, "HTTP Render error querying %s%s: %q", peer.GetName(), path, err)
 			}
 			responses <- struct {
 				data PeerResponse

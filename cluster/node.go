@@ -114,6 +114,14 @@ func (n Node) IsReady() bool {
 	return n.State == NodeReady && n.Priority <= maxPrio
 }
 
+func (n Node) GetPriority() int {
+	return n.Priority
+}
+
+func (n Node) GetPartitions() []int32 {
+	return n.Partitions
+}
+
 func (n Node) IsLocal() bool {
 	return n.local
 }
@@ -185,6 +193,10 @@ func (n Node) Post(ctx context.Context, name, path string, body Traceable) (ret 
 	}
 
 	return nil, nil
+}
+
+func (n Node) GetName() string {
+	return n.Name
 }
 
 func handleResp(rsp *http.Response) ([]byte, error) {
