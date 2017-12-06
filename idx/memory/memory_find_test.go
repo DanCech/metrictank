@@ -665,7 +665,7 @@ func BenchmarkTagsWithFromAndFilter(b *testing.B) {
 
 func BenchmarkTagsWithoutFromNorFilter(b *testing.B) {
 	InitLargeIndex()
-	expected := []string{"dc", "device", "direction", "disk", "cpu", "metric", "host"}
+	expected := []string{"dc", "device", "direction", "disk", "cpu", "metric", "host", "name"}
 	b.ReportAllocs()
 	b.ResetTimer()
 
